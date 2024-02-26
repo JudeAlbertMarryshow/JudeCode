@@ -1,0 +1,40 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+   vector<int> towers[3];
+   int ringCount;
+   cout << "Please enter the number of rings to move: ";
+   cin >> ringCount;
+   cout << endl;
+   // near represents the tower number to which the ring is to be moved, when the number of rings is odd.
+   // If the ring count is odd, near = 1 and far = 2.  If the ring count is even, it's the opposite.
+   int nearTower = (ringCount % 2 == 0 ? 2 : 1), farTower = (ringCount % 2 == 0 ? 1 : 2);
+   int sourceTower = 0, destinationTower = nearTower, candidateRing = 1, moveCount = 0;
+   
+   // Initializing the towers
+   for(int i = ringCount + 1; i >= 1; --i)
+      towers[0].push_back(i);
+   towers[1].push_back(ringCount + 1);
+   towers[2].push_back(ringCount + 1);
+   
+   while (towers[1].size() < ringCount + 1) { // while towers[1] does not contain all of the rings
+      cout << "Move #" << ++moveCount << ": Transfer ring " << candidateRing << " from tower " << char(sourceTower + 'A') << " to tower " << char(destinationTower + 'A') << "\n";
+      
+      towers[destinationTower].push_back(towers[sourceTower].back()); // Moving the ring from the source tower to the destination tower.
+      towers[sourceTower].pop_back();
+      
+      if (towers[(destinationTower + 1) % 3].back() < towers[(destinationTower + 2) % 3].back()) // Determining the source tower (the smallest available ring that has not just been moved).
+         sourceTower = (destinationTower + 1) % 3;
+      else
+         sourceTower = (destinationTower + 2) % 3;
+      candidateRing = towers[sourceTower].back();                      // The candidate ring is the ring on top of the source tower.
+         
+      if (towers[(sourceTower + nearTower) % 3].back() > candidateRing) // Determining the destination tower.
+         destinationTower = (sourceTower + nearTower) % 3;                   // (the nearest tower on which the ring can be placed)
+      else
+         destinationTower = (sourceTower + farTower) % 3;
+   }
+   return 0;
+}
